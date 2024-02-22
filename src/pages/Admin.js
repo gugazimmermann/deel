@@ -1,4 +1,5 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
+import { adminBestClients, adminBestProfession } from "../services";
 import { Alert, Loading, Table } from "../components";
 import PagesLayout from "./PagesLayout";
 
@@ -38,37 +39,25 @@ function Admin() {
     return true;
   };
 
-  const getBestProfession = useCallback(async () => {
+  const getBestProfession = async () => {
     clearAll();
     if (!validateDates(startDate, endDate)) return;
     setLoading(true);
-    const response = await fetch(
-      `admin/best-profession?start=${startDate}&end=${endDate}`,
-      {
-        method: "GET",
-      }
-    );
-    const res = await response.json();
+    const res = await adminBestProfession(startDate, endDate);
     if (res.error) setAlert(res.error);
     else setBestProfession(res);
     setLoading(false);
-  }, [endDate, startDate]);
+  };
 
-  const getBestClients = useCallback(async () => {
+  const getBestClients = async () => {
     clearAll();
     if (!validateDates(startDate, endDate)) return;
     setLoading(true);
-    const response = await fetch(
-      `admin/best-clients?start=${startDate}&end=${endDate}&limit=${limit}`,
-      {
-        method: "GET",
-      }
-    );
-    const res = await response.json();
+    const res = await adminBestClients(startDate, endDate, limit);
     if (res.error) setAlert(res.error);
     else setBestClients(res);
     setLoading(false);
-  }, [endDate, limit, startDate]);
+  };
 
   return (
     <PagesLayout title="admin">
@@ -109,6 +98,7 @@ function Admin() {
         <div className="w-1/4 flex justify-end gap-4">
           <button
             type="button"
+            data-testid="button-best-profession"
             onClick={() => getBestProfession()}
             className="bg-blue-800 rounded-md px-2 py-1 text-slate-50"
           >
@@ -116,6 +106,7 @@ function Admin() {
           </button>
           <button
             type="button"
+            data-testid="button-best-clients"
             onClick={() => getBestClients()}
             className="bg-blue-800 rounded-md px-2 py-1 text-slate-50"
           >
@@ -139,7 +130,7 @@ function Admin() {
           ]}
         />
       )}
-      {BestClients && (
+      {BestClients.length > 0 && (
         <Table
           headers={["ID", "full name", "paid"]}
           body={BestClients.map((c) => [

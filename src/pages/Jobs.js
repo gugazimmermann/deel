@@ -1,5 +1,6 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useApp } from "../context/AppContext";
+import { jobsUnpaid, jobsPay } from "../services";
 import { Alert, Loading, Table } from "../components";
 import PagesLayout from "./PagesLayout";
 
@@ -20,31 +21,20 @@ function Jobs() {
     e.preventDefault();
     clearAll();
     setLoading(true);
-    const response = await fetch(`jobs/${jobId}/pay`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        profile_id: state.profileID || null,
-      },
-    });
-    const res = await response.json();
+    const res = await jobsPay(state.profileID, jobId);
     if (res.error) setAlert(res.error);
     else setSuccess(res.message);
     setLoading(false);
   };
 
-  const getJobsUnpaid = useCallback(async () => {
+  const getJobsUnpaid = async () => {
     clearAll();
     setLoading(true);
-    const response = await fetch("jobs/unpaid", {
-      method: "GET",
-      headers: { profile_id: state.profileID || null },
-    });
-    const res = await response.json();
+    const res = await jobsUnpaid(state.profileID);
     if (res.error) setAlert(res.error);
     else setJobs(res);
     setLoading(false);
-  }, [state.profileID]);
+  };
 
   return (
     <PagesLayout title="jobs">
@@ -52,6 +42,7 @@ function Jobs() {
         <div className="w-1/2 flex justify-start">
           <button
             type="button"
+            data-testid="button-jobs-unpaid"
             onClick={() => getJobsUnpaid()}
             className="bg-blue-800 rounded-md px-2 py-1 text-slate-50 w-1/3"
           >

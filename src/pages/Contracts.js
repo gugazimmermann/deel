@@ -1,5 +1,6 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { useApp } from "../context/AppContext";
+import { contractById, contractsAll } from "../services";
 import { Alert, Loading, Table } from "../components";
 import PagesLayout from "./PagesLayout";
 
@@ -19,28 +20,20 @@ function Contracts() {
     e.preventDefault();
     clearAll();
     setLoading(true);
-    const response = await fetch(`contracts/${contractId}`, {
-      method: "GET",
-      headers: { profile_id: state.profileID || null },
-    });
-    const res = await response.json();
+    const res = await contractById(state.profileID, contractId);
     if (res.error) setAlert(res.error);
     else setContracts([res]);
     setLoading(false);
   };
 
-  const getContracts = useCallback(async () => {
+  const getContracts = async () => {
     clearAll();
     setLoading(true);
-    const response = await fetch("contracts", {
-      method: "GET",
-      headers: { profile_id: state.profileID || null },
-    });
-    const res = await response.json();
+    const res = await contractsAll(state.profileID);
     if (res.error) setAlert(res.error);
     else setContracts(res);
     setLoading(false);
-  }, [state.profileID]);
+  };
 
   return (
     <PagesLayout title="contracts">
@@ -48,6 +41,7 @@ function Contracts() {
         <div className="w-1/2 flex justify-start">
           <button
             type="button"
+            data-testid="button-get-contracts"
             onClick={() => getContracts()}
             className="bg-blue-800 rounded-md px-2 py-1 text-slate-50 w-1/3"
           >
@@ -62,7 +56,7 @@ function Contracts() {
             <input
               id="contract_id"
               name="contract_id"
-              data-testid="search-contract-id"
+              data-testid="button-search-contract"
               value={contractId}
               onChange={(e) => setContractId(e.target.value)}
               className="px-2 py-1 text-gray-700 bg-white border border-gray-200 rounded-md mr-4"

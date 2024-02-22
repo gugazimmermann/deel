@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
+import { balancesDeposit } from "../services";
 import { Alert, Loading, Table } from "../components";
 import PagesLayout from "./PagesLayout";
 
@@ -20,15 +21,7 @@ function Balances() {
     e.preventDefault();
     clearAll();
     setLoading(true);
-    const response = await fetch(`balances/deposit/${userId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        profile_id: state.profileID || null,
-      },
-      body: JSON.stringify({ amount }),
-    });
-    const res = await response.json();
+    const res = await balancesDeposit(state.profileID, userId, amount);
     if (res.error) setAlert(res.error);
     else setNewBalance(res);
     setLoading(false);

@@ -43,7 +43,7 @@ const bestClients = async (req, res) => {
   let {limit} = req.query;
   limit = limit ? parseInt(limit, 10) : 2;
   const bestClients = await Job.findAll({
-    where: whereDatesAndPaid(start, end),
+    where: whereDatesAndPaid(start, end, true),
     include: [
       {
         model: Contract,

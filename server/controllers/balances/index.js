@@ -4,6 +4,7 @@ const {badRequest} = require("../../helpers");
 const deposit = async (req, res) => {
   const {Profile, Contract, Job} = req.app.get("models");
   if (req.profile.id !== parseInt(req.params.userId, 10) || req.profile.type !== "client") return res.status(403).send({error: "Forbidden"});
+  if (!req.body.amount)  return badRequest(res, "Missing Amount");
   const totalUnpaid = await Job.sum("price", {
     where: {paid: {[sequelize.Sequelize.Op.not]: true}},
     include: [{model: Contract, where: {ClientId: req.profile.id, status: "in_progress"}, required: true}],

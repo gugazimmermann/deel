@@ -1,70 +1,106 @@
-# Getting Started with Create React App
+# DEEL BACKEND TASK
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+💫 Welcome! 🎉
 
-## Available Scripts
+This backend exercise involves building a Node.js/Express.js app that will serve a REST API. We imagine you should spend around 3 hours at implement this feature.
 
-In the project directory, you can run:
+## Data Models
 
-### `npm start`
+> **All models are defined in src/model.js**
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Profile
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+A profile can be either a `client` or a `contractor`.
+clients create contracts with contractors. contractor does jobs for clients and get paid.
+Each profile has a balance property.
 
-### `npm test`
+### Contract
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+A contract between and client and a contractor.
+Contracts have 3 statuses, `new`, `in_progress`, `terminated`. contracts are considered active only when in status `in_progress`
+Contracts group jobs within them.
 
-### `npm run build`
+### Job
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+contractor get paid for jobs by clients under a certain contract.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Getting Set Up
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The exercise requires [Node.js](https://nodejs.org/en/) to be installed. We recommend using the LTS version.
 
-### `npm run eject`
+1. Start by creating a local repository for this folder.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. In the repo root directory, run `npm install` to gather all dependencies.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. Next, `npm run seed` will seed the local SQLite database. **Warning: This will drop the database if it exists**. The database lives in a local file `database.sqlite3`.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+1. Then run `npm start` which should start both the server and the React client.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+❗️ **Make sure you commit all changes to the master branch!**
 
-## Learn More
+## Technical Notes
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- The server is running with [nodemon](https://nodemon.io/) which will automatically restart for you when you modify and save a file.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- The database provider is SQLite, which will store data in a file local to your repository called `database.sqlite3`. The ORM [Sequelize](http://docs.sequelizejs.com/) is on top of it. You should only have to interact with Sequelize - **please spend some time reading sequelize documentation before starting the exercise.**
 
-### Code Splitting
+- To authenticate users use the `getProfile` middleware that is located under src/middleware/getProfile.js. users are authenticated by passing `profile_id` in the request header. after a user is authenticated his profile will be available under `req.profile`. make sure only users that are on the contract can access their contracts.
+- The server is running on port 3001.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## APIs To Implement
 
-### Analyzing the Bundle Size
+Below is a list of the required API's for the application.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+1. **_GET_** `/contracts/:id` - This API is broken 😵! it should return the contract only if it belongs to the profile calling. better fix that!
 
-### Making a Progressive Web App
+2. **_GET_** `/contracts` - Returns a list of contracts belonging to a user (client or contractor), the list should only contain non terminated contracts.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+3. **_GET_** `/jobs/unpaid` - Get all unpaid jobs for a user (**_either_** a client or contractor), for **_active contracts only_**.
 
-### Advanced Configuration
+4. **_POST_** `/jobs/:job_id/pay` - Pay for a job, a client can only pay if his balance >= the amount to pay. The amount should be moved from the client's balance to the contractor balance.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+<!-- 4 - Not active contracts only? -->
 
-### Deployment
+5. **_POST_** `/balances/deposit/:userId` - Deposits money into the the the balance of a client, a client can't deposit more than 25% his total of jobs to pay. (at the deposit moment)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+<!-- 5 - userId is the same as the getProfile? -->
 
-### `npm run build` fails to minify
+6. **_GET_** `/admin/best-profession?start=<date>&end=<date>` - Returns the profession that earned the most money (sum of jobs paid) for any contactor that worked in the query time range.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+<!-- 6 - just the first? ignore getProfile? -->
+
+7. **_GET_** `/admin/best-clients?start=<date>&end=<date>&limit=<integer>` - returns the clients the paid the most for jobs in the query time period. limit query parameter should be applied, default limit is 2.
+
+```
+ [
+    {
+        "id": 1,
+        "fullName": "Reece Moyer",
+        "paid" : 100.3
+    },
+    {
+        "id": 200,
+        "fullName": "Debora Martin",
+        "paid" : 99
+    },
+    {
+        "id": 22,
+        "fullName": "Debora Martin",
+        "paid" : 21
+    }
+]
+```
+
+<!-- 7 - ignore getProfile? -->
+
+## Going Above and Beyond the Requirements
+
+Given the time expectations of this exercise, we don't expect anyone to submit anything super fancy, but if you find yourself with extra time, any extra credit item(s) that showcase your unique strengths would be awesome! 🙌
+
+It would be great for example if you'd write some unit test / simple frontend demostrating calls to your fresh APIs.
+
+## Submitting the Assignment
+
+When you have finished the assignment, zip your repo (make sure to include .git folder) and send us the zip.
+
+Thank you and good luck! 🙏

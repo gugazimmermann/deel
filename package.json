@@ -2,21 +2,14 @@
   "name": "deel",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.22.1",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
-  },
   "scripts": {
-    "start": "react-scripts start",
+    "start:frontend": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test:frontend": "react-scripts test",
+    "eject": "react-scripts eject",
+    "seed": "node ./scripts/seedDb.js",
+    "test:backend": "jest --coverage",
+    "start:backend": "nodemon ./server/server.js"
   },
   "eslintConfig": {
     "extends": [
@@ -36,7 +29,30 @@
       "last 1 safari version"
     ]
   },
+  "engines": {
+    "node": ">=10.16.3"
+  },
+  "engineStrict": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "morgan": "^1.10.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.1",
+    "react-scripts": "5.0.1",
+    "sequelize": "^6.37.1",
+    "sqlite3": "^5.1.7",
+    "web-vitals": "^2.1.4"
+  },
   "devDependencies": {
+    "jest": "^27.5.1",
+    "nodemon": "^3.0.3",
+    "sequelize-mock": "^0.10.2",
+    "supertest": "^6.3.4",
     "tailwindcss": "^3.4.1"
   }
 }

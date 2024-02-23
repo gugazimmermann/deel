@@ -5,7 +5,7 @@
   "scripts": {
     "start:frontend": "react-scripts start",
     "build": "react-scripts build",
-    "test:frontend": "react-scripts test",
+    "test:frontend": "react-scripts test --watchAll=false --coverage",
     "eject": "react-scripts eject",
     "seed": "node ./scripts/seedDb.js",
     "test:backend": "jest --coverage",
@@ -13,6 +13,14 @@
     "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\""
   },
   "proxy": "http://localhost:3001",
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!src/reportWebVitals.ts",
+      "!src/setupTests.ts",
+      "!src/**/index.{ts,tsx}"
+    ]
+  },
   "eslintConfig": {
     "extends": [
       "react-app",

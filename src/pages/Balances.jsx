@@ -28,7 +28,7 @@ function Balances() {
   };
 
   return (
-    <PagesLayout title="contracts">
+    <PagesLayout title="balances">
       <div className="w-full flex flex-row justify-between items-center mt-4">
         <form onSubmit={handleDeposit}>
           <input
